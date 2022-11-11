@@ -1,11 +1,7 @@
-import dayjs from 'dayjs';
+import { clsx as cx } from 'clsx';
+import { isCurrentDayValid } from '../util';
 
 export function Day({ day, rowIdx }) {
-  const getCurrentDayClass = (): string => {
-    return day.format('DD-MM-YY') === dayjs().format('DD-MM-YY')
-        ? 'bg-blue-600 text-white rounded-full w-7'
-        : '';
-  }
   return (
       <div className="border border-gray-200 flex flex-col">
         <header className="flex flex-col items-center">
@@ -14,7 +10,7 @@ export function Day({ day, rowIdx }) {
               {day.format('ddd').toUpperCase()}
             </p>
           )}
-          <p className={`text-sm p-1 my-1 text-center ${getCurrentDayClass()}`}>
+          <p className={cx('text-sm p-1 my-1 text-center', isCurrentDayValid(day) && 'bg-blue-600 text-white rounded-full w-7')}>
             {day.format('DD')}
           </p>
         </header>

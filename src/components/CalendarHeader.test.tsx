@@ -4,13 +4,23 @@ import { CalendarContext } from '../context';
 import dayjs from 'dayjs';
 
 describe('CalendarHeader', () => {
-  let monthIndex = 10;
-  const setMonthIndex: (i: number) => void = (i: number) => {
-  };
+  let monthIndex: number = 10;
+  const setMonthIndex: (i: number) => void = (i: number) => {};
+  let miniCalendarMonth: number = null;
+  const setMiniCalendarMonth: (i: number) => void = (i: number) => {};
+  let selectedDay: dayjs.Dayjs;
+  const setSelectedDay: (day: dayjs.Dayjs) => void = (day: dayjs.Dayjs) => {};
 
-  test('handlePrevMonth', () => {
+  test('goToPrevMonth', () => {
     const { container, rerender } = render(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
     );
@@ -20,16 +30,30 @@ describe('CalendarHeader', () => {
     const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
     fireEvent.click(prevButton);
     rerender(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>,
     );
     expect(calendarDate).toHaveTextContent(date);
   });
 
-  test('handleNextMonth', () => {
+  test('goToNextMonth', () => {
     const { container, rerender } = render(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
     );
@@ -39,16 +63,30 @@ describe('CalendarHeader', () => {
     const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
     fireEvent.click(nextButton);
     rerender(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
     );
     expect(calendarDate).toHaveTextContent(date);
   });
 
-  test('handleToday', () => {
+  test('goToCurrentMonth', () => {
     const { container, rerender } = render(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>,
     );
@@ -57,7 +95,14 @@ describe('CalendarHeader', () => {
     const calendarDate = getByTestId(container, 'calendar-date');
     fireEvent.click(todayButton);
     rerender(
-      <CalendarContext.Provider value={{ monthIndex, setMonthIndex }}>
+      <CalendarContext.Provider value={{
+        monthIndex,
+        setMonthIndex,
+        miniCalendarMonth,
+        setMiniCalendarMonth,
+        selectedDay,
+        setSelectedDay
+      }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
     );

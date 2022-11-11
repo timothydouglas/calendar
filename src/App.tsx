@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import './App.css';
 import { getMonth } from './util';
-import { CalendarHeader, Sidebar, Month } from './components';
+import { CalendarHeader, Month, Sidebar } from './components';
 import { CalendarContext } from './context';
 import { CalendarContextType } from './models';
 
