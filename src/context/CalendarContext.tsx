@@ -9,4 +9,6 @@ export const CalendarContext: React.Context<CalendarContextType | null> = React.
   setMiniCalendarMonth: (i: number) => {},
   selectedDay: null,
   setSelectedDay: (day: dayjs.Dayjs) => {},
+  displayUnavailabilityModal: false,
+  setUnavailabilityModal: () => {},
 })

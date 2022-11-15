@@ -10,6 +10,8 @@ describe('CalendarHeader', () => {
   const setMiniCalendarMonth: (i: number) => void = (i: number) => {};
   let selectedDay: dayjs.Dayjs;
   const setSelectedDay: (day: dayjs.Dayjs) => void = (day: dayjs.Dayjs) => {};
+  let displayUnavailabilityModal: boolean = false;
+  const setUnavailabilityModal: (x: boolean) => void = (x: boolean) => {};
 
   test('goToPrevMonth', () => {
     const { container, rerender } = render(
@@ -19,7 +21,9 @@ describe('CalendarHeader', () => {
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
@@ -30,13 +34,15 @@ describe('CalendarHeader', () => {
     const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
     fireEvent.click(prevButton);
     rerender(
-      <CalendarContext.Provider value={{
+     <CalendarContext.Provider value={{
         monthIndex,
         setMonthIndex,
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>,
@@ -46,13 +52,15 @@ describe('CalendarHeader', () => {
 
   test('goToNextMonth', () => {
     const { container, rerender } = render(
-      <CalendarContext.Provider value={{
+     <CalendarContext.Provider value={{
         monthIndex,
         setMonthIndex,
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
@@ -63,13 +71,15 @@ describe('CalendarHeader', () => {
     const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
     fireEvent.click(nextButton);
     rerender(
-      <CalendarContext.Provider value={{
+     <CalendarContext.Provider value={{
         monthIndex,
         setMonthIndex,
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
@@ -79,13 +89,15 @@ describe('CalendarHeader', () => {
 
   test('goToCurrentMonth', () => {
     const { container, rerender } = render(
-      <CalendarContext.Provider value={{
+     <CalendarContext.Provider value={{
         monthIndex,
         setMonthIndex,
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>,
@@ -95,13 +107,15 @@ describe('CalendarHeader', () => {
     const calendarDate = getByTestId(container, 'calendar-date');
     fireEvent.click(todayButton);
     rerender(
-      <CalendarContext.Provider value={{
+     <CalendarContext.Provider value={{
         monthIndex,
         setMonthIndex,
         miniCalendarMonth,
         setMiniCalendarMonth,
         selectedDay,
-        setSelectedDay
+        setSelectedDay,
+        displayUnavailabilityModal,
+        setUnavailabilityModal
       }}>
         <CalendarHeader/>
       </CalendarContext.Provider>
