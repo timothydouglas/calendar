@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
-const format: string = 'DD-MM-YY';
+export const format: string = 'DD-MM-YY';
+export const colours: string[] = ['indigo', 'gray', 'green', 'blue', 'red', 'purple'];
 
 export function getMonth(month = dayjs().month()): dayjs.Dayjs[][] {
   month = Math.floor(month);

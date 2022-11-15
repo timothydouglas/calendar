@@ -9,4 +9,6 @@ export type CalendarContextType = {
   setSelectedDay: (day: dayjs.Dayjs) => void;
   displayUnavailabilityModal: boolean,
   setUnavailabilityModal: (x: boolean) => void,
+  dispatchUnavailability: ({ type, payload }: { type: any; payload: any; }) => void,
+  unavailabilityEvents: []
 };

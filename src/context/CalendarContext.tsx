@@ -11,4 +11,6 @@ export const CalendarContext: React.Context<CalendarContextType | null> = React.
   setSelectedDay: (day: dayjs.Dayjs) => {},
   displayUnavailabilityModal: false,
   setUnavailabilityModal: () => {},
+  dispatchUnavailability: ({ type, payload }: { type: any; payload: any; }) => {},
+  unavailabilityEvents: []
 })
