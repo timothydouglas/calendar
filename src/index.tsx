@@ -1,18 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { ContextWrapper } from './context';
+import {
+  ApiProvider,
+  AuthProvider,
+  EventProvider,
+  FilterProvider,
+  InterceptorProvider,
+  LocaleProvider,
+  SelectedDateProvider,
+  ToastProvider
+} from './context';
+import { apiMethods } from './api';
+import './index.css';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+
 root.render(
   <React.StrictMode>
-    <ContextWrapper>
-      <App />
-    </ContextWrapper>
+    <ApiProvider methods={apiMethods}>
+      <AuthProvider>
+        <ToastProvider>
+          <InterceptorProvider>
+            <LocaleProvider>
+              <SelectedDateProvider>
+                <EventProvider>
+                  <FilterProvider>
+                    <App />
+                  </FilterProvider>
+                </EventProvider>
+              </SelectedDateProvider>
+            </LocaleProvider>
+          </InterceptorProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </ApiProvider>
   </React.StrictMode>
 );
 

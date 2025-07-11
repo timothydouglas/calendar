@@ -7,15 +7,15 @@ services:
     restart: always
     build:
       dockerfile: Dockerfile
-      context: nginx
+      context: ./
     ports:
-      - "3050:80"
+      - "80:80"
 
   calendar-ui:
     stdin_open: true
     build:
-      dockerfile: Dockerfile
       context: ./
+      dockerfile: Dockerfile
     volumes:
       - /app/node_modules
       - ./client:/app

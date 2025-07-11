@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@*": ["*"],
+      "@api": [
+        "./src/api/index.ts"
+      ],
+      "@components": [
+        "./src/components/index.ts"
+      ],
+      "@context": [
+        "./src/context/index.ts"
+      ],
+      "@hooks": [
+        "./src/hooks/index.ts"
+      ],
+      "@interceptors": [
+        "./src/interceptors/index.ts"
+      ],
+      "@models": [
+        "./src/models/index.ts",
+      ],
+      "@util": [
+        "util",
+        "util*",
+        "util/*",
+        "./src/util",
+        "./src/util/*",
+        "/util",
+        "/util/*",
+        "./src/util/index.ts",
+      ]
+    }
+  }
+}

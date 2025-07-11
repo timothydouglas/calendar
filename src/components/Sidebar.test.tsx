@@ -1,12 +1,28 @@
-import { render, screen } from "@testing-library/react";
-import { Sidebar } from "./Sidebar";
-
+import { render, screen } from '@testing-library/react';
+import { Sidebar, CreateButton } from '../components';
 
 describe('Sidebar', () => {
-  it('should instantiate sidebar with Create Unavailability Button', () => {
-    render(<Sidebar />);
-    const sidebar: any = screen.getByTestId('sidebar');
-    const button: any = screen.getByTestId('create-unavailability')
-    expect(sidebar).toContainElement(button);
-  })
-})
+  const mockDate: Date = new Date();
+
+  describe('children', () => {
+    it('should instantiate sidebar with child components', () => {
+      render(
+        <Sidebar>
+          <CreateButton
+            addUnavailableEvent={undefined}
+            addAvailableEvent={undefined}
+            deleteUnavailableEvent={undefined}
+            deleteAvailableEvent={undefined}
+            selectedDate={mockDate}
+            locations={[]}
+            workUnits={[]}
+          />
+        </Sidebar>
+      );
+      const sidebar: HTMLElement = screen.getByTestId('sidebar');
+      const createButton: HTMLElement = screen.getByTestId('create-button');
+
+      expect(sidebar).toContainElement(createButton);
+    });
+  });
+});

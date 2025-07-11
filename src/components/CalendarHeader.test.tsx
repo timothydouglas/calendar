@@ -1,125 +1,272 @@
-import { fireEvent, getByTestId, render } from '@testing-library/react';
+import { fireEvent, render, RenderResult, screen } from '@testing-library/react';
 import { CalendarHeader } from './CalendarHeader';
-import { CalendarContext } from '../context';
-import dayjs from 'dayjs';
+import { add, sub } from 'date-fns';
+import { formatHeaderDay, formatHeaderWeek, formatMonth } from '../util';
+import { DateType, DateTypes, SelectOption } from '../models';
+import { mockUser } from '../mocks';
+import { AuthProvider } from '../context';
 
 describe('CalendarHeader', () => {
-  let monthIndex: number = 10;
-  const setMonthIndex: (i: number) => void = (i: number) => {};
-  let miniCalendarMonth: number = null;
-  const setMiniCalendarMonth: (i: number) => void = (i: number) => {};
-  let selectedDay: dayjs.Dayjs;
-  const setSelectedDay: (day: dayjs.Dayjs) => void = (day: dayjs.Dayjs) => {};
-  let displayUnavailabilityModal: boolean = false;
-  const setUnavailabilityModal: (x: boolean) => void = (x: boolean) => {};
+  let mockDate: Date = new Date();
+  let mockDateType: SelectOption = { label: DateTypes[DateType.MONTH], id: DateType.MONTH };
+  const mockTitle: string = 'Calendar';
+  const headerDateId: string = 'calendar-header-date';
+  const mockGotoCurrentMonth = (): void => {
+    mockDate = new Date();
+  };
+  const mockGotoNextMonth = (): void => {
+    mockDate = add(mockDate, { months: 1 });
+  };
+  const mockGotoPrevMonth = (): void => {
+    mockDate = sub(mockDate, { months: 1 });
+  };
+  const mockLogOut = (): void => {
+    Object.defineProperty(window, 'location', { value: { href: '/logout' } });
+  };
+  const mockSetDateType = (type: SelectOption): void => {
+    mockDateType = { ...mockDateType, ...type };
+  };
 
-  test('goToPrevMonth', () => {
-    const { container, rerender } = render(
-      <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>
-    );
-    const prevButton = getByTestId(container, 'calendar-prev-button');
-    const calendarDate = getByTestId(container, 'calendar-date');
-    monthIndex = monthIndex - 1;
-    const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
-    fireEvent.click(prevButton);
-    rerender(
-     <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>,
-    );
-    expect(calendarDate).toHaveTextContent(date);
+  beforeEach(() => {
+    mockDateType = { label: DateTypes[DateType.MONTH], id: DateType.MONTH };
+    mockDate = new Date();
   });
 
-  test('goToNextMonth', () => {
-    const { container, rerender } = render(
-     <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>
-    );
-    const nextButton = getByTestId(container, 'calendar-next-button');
-    const calendarDate = getByTestId(container, 'calendar-date');
-    monthIndex = monthIndex + 1;
-    const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
-    fireEvent.click(nextButton);
-    rerender(
-     <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>
-    );
-    expect(calendarDate).toHaveTextContent(date);
+  describe('title', () => {
+    it('should show correct title', () => {
+      render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const titleHeader: HTMLElement = screen.getByTestId('calendar-header-title');
+
+      expect(titleHeader).toHaveTextContent(mockTitle);
+    });
   });
 
-  test('goToCurrentMonth', () => {
-    const { container, rerender } = render(
-     <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>,
-    );
-    const todayButton = getByTestId(container, 'calendar-today-button');
-    const date: string = dayjs().month(monthIndex).format('MMMM YYYY');
-    const calendarDate = getByTestId(container, 'calendar-date');
-    fireEvent.click(todayButton);
-    rerender(
-     <CalendarContext.Provider value={{
-        monthIndex,
-        setMonthIndex,
-        miniCalendarMonth,
-        setMiniCalendarMonth,
-        selectedDay,
-        setSelectedDay,
-        displayUnavailabilityModal,
-        setUnavailabilityModal
-      }}>
-        <CalendarHeader/>
-      </CalendarContext.Provider>
-    );
-    expect(calendarDate).toHaveTextContent(date);
+  describe('date', () => {
+    it('should show correct input date for date type DAY', () => {
+      // Day Date Type
+      mockDateType = { label: DateTypes[DateType.DAY], id: DateType.DAY };
+
+      render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+      const currentDate: string = formatHeaderDay(mockDate);
+
+      expect(calendarDate).toHaveTextContent(currentDate);
+    });
+
+    it('should show correct input date for date type WEEK', () => {
+      // Week Date Type
+      mockDateType = { label: DateTypes[DateType.WEEK], id: DateType.WEEK };
+      // April 2023 ends on Sunday
+      mockDate = new Date(2023, 4, 30);
+      const mockEndDate: Date = add(mockDate, { days: 6 });
+
+      render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+      const currentDate: string = formatHeaderWeek(mockDate, mockEndDate);
+
+      expect(calendarDate).toHaveTextContent(currentDate);
+    });
+
+    it('should show correct input date for date type MONTH', () => {
+      render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+      const currentDate: string = formatMonth(mockDate);
+
+      expect(calendarDate).toHaveTextContent(currentDate);
+    });
+  });
+
+  describe('gotoCurrentMonth', () => {
+    it('should set header date to current date', () => {
+      // January 2026
+      mockDate = new Date(2026, 1, 1);
+
+      const { rerender }: RenderResult = render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const currentDate: string = formatMonth(new Date());
+      const todayButton: HTMLElement = screen.getByTestId('calendar-header-today-button');
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+
+      fireEvent.click(todayButton);
+
+      rerender(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+
+      expect(calendarDate).toHaveTextContent(currentDate);
+    });
+  });
+
+  describe('gotoPrevDate', () => {
+    it('should set header date to previous month', () => {
+      const { rerender }: RenderResult = render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const prevDate: string = formatMonth(sub(mockDate, { months: 1 }));
+      const prevButton: HTMLElement = screen.getByTestId('calendar-header-prev-button');
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+
+      fireEvent.click(prevButton);
+
+      rerender(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+
+      expect(calendarDate).toHaveTextContent(prevDate);
+    });
+  });
+
+  describe('gotoNextDate', () => {
+    it('should set header date to next month', () => {
+      const { rerender }: RenderResult = render(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+      const nextDate: string = formatMonth(add(mockDate, { months: 1 }));
+      const nextButton: HTMLElement = screen.getByTestId('calendar-header-next-button');
+      const calendarDate: HTMLElement = screen.getByTestId(headerDateId);
+
+      fireEvent.click(nextButton);
+
+      rerender(
+        <CalendarHeader
+          date={mockDate}
+          dateType={mockDateType}
+          setDateType={mockSetDateType}
+          gotoCurrentDate={mockGotoCurrentMonth}
+          gotoNextDate={mockGotoNextMonth}
+          gotoPrevDate={mockGotoPrevMonth}
+          logOut={mockLogOut}
+          title={mockTitle}
+          user={mockUser}
+        />
+      );
+
+      expect(calendarDate).toHaveTextContent(nextDate);
+    });
+  });
+
+  describe('logOut', () => {
+    it('should log user out', () => {
+      render(
+        <AuthProvider>
+          <CalendarHeader
+            date={mockDate}
+            dateType={mockDateType}
+            setDateType={mockSetDateType}
+            gotoCurrentDate={mockGotoCurrentMonth}
+            gotoNextDate={mockGotoNextMonth}
+            gotoPrevDate={mockGotoPrevMonth}
+            logOut={mockLogOut}
+            title={mockTitle}
+            user={mockUser}
+          />
+        </AuthProvider>
+      );
+      const url: string = '/logout';
+      const logoutButton: HTMLElement = screen.getByTestId('calendar-header-logout-button');
+
+      fireEvent.click(logoutButton);
+
+      expect(window.location.href).toBe(url);
+    });
   });
 });

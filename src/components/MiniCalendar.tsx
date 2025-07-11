@@ -1,67 +1,67 @@
-import React from 'react';
-import dayjs from 'dayjs';
-import { useContext, useEffect, useState } from 'react';
-import { getMonth, isCurrentDaySelected, isCurrentDayValid } from '../util';
-import { CalendarContextType } from '../models';
-import { CalendarContext } from '../context';
+import { Fragment } from 'react';
 import { clsx as cx } from 'clsx';
+import { useMiniCalendar } from '../hooks';
+import { MiniCalendarProps, UseMiniCalendarHook } from '../models';
+import {
+  formatDayMini,
+  formatMonthHeader,
+  formatMonthMini,
+  isToday,
+  isSameDay,
+  isSameMonth
+} from '../util';
 
+export function MiniCalendar({ selectedDate, setSelectedDate }: MiniCalendarProps): JSX.Element {
+  const { date, days, gotoPrevMonth, gotoNextMonth }: UseMiniCalendarHook = useMiniCalendar(selectedDate);
 
-export function MiniCalendar() {
-  const [currentMonthIdx, setCurrentMonthIdx] = useState(dayjs().month());
-  const [currentMonth, setCurrentMonth] = useState(getMonth());
-  useEffect(() => {
-    setCurrentMonth(getMonth(currentMonthIdx))
-  }, [currentMonthIdx]);
-  const { monthIndex, setMiniCalendarMonth, setSelectedDay, selectedDay }: CalendarContextType = useContext(CalendarContext) as CalendarContextType;
-  useEffect(() => {
-    setCurrentMonthIdx(monthIndex)
-  }, [monthIndex]);
-  const gotoPrevMonth = (): void => setCurrentMonthIdx(currentMonthIdx - 1);
-  const gotoNextMonth = (): void => setCurrentMonthIdx(currentMonthIdx + 1);
   return (
-    <div className="mt-9">
-      <header className="flex justify-between">
-        <p className="text-gray-500 font-bold">
-          {dayjs().month(currentMonthIdx).format('MMMM YYYY')}
-        </p>
-        <div>
-          <button onClick={gotoPrevMonth}>
-            <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+    <div className="mt-9 mb-4">
+      <header className="flex justify-between mb-2">
+        <h3 data-testid="mini-calendar-date">{formatMonthMini(date)}</h3>
+        <div className="flex justify-between space-x-3">
+          <button
+            onClick={gotoPrevMonth}
+            className="hover:bg-slate-100 rounded-full h-6 w-6 flex items-center justify-center"
+            data-testid="mini-calendar-prev-button"
+          >
+            <span className="material-icons-outlined cursor-pointer text-gray-700 text-lg">
               chevron_left
             </span>
           </button>
-          <button onClick={gotoNextMonth}>
-            <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+          <button
+            onClick={gotoNextMonth}
+            className="hover:bg-slate-100 rounded-full h-6 w-6 flex items-center justify-center"
+            data-testid="mini-calendar-next-button"
+          >
+            <span className="material-icons-outlined cursor-pointer text-gray-700 text-lg">
               chevron_right
             </span>
           </button>
         </div>
       </header>
-      <div className="grid grid-cols-7 grid-rows-6">
-        {currentMonth[0].map((day: dayjs.Dayjs, i: number) => (
-          <span key={i} className="text-sm py-1 text-center">
-            {day.format('dd').charAt(0)}
+
+      <div className="grid grid-cols-7 grid-rows-6 -mx-2">
+        {days.map((day: Date, i: number) => (i < 7 &&
+          <span key={i} className="text-xs font-bold py-1 text-center">
+            {formatMonthHeader(day)}
           </span>
         ))}
-        {currentMonth.map((row: dayjs.Dayjs[], i: number) => (
-          <React.Fragment key={i}>
-            {row.map((day: dayjs.Dayjs, idx: number) => (
-              <button key={idx}
-                onClick={() => {
-                  setMiniCalendarMonth(currentMonthIdx);
-                  setSelectedDay(day);
-                }}
-                className={cx('py-1 w-full', {
-                  'bg-blue-500 text-white rounded-full': isCurrentDayValid(day),
-                  'bg-blue-100 rounded-full text-blue-600 font-bold': isCurrentDaySelected(day, selectedDay)
-                })}>
-                <span className="text-sm">{day.format('D')}</span>
-              </button>
-            ))}
-          </React.Fragment>
+
+        {days.map((day: Date, i: number) => (
+          <Fragment key={i}>
+            <button
+              onClick={() => setSelectedDate(day)}
+              className={cx('p-1 w-6 h-6 m-0.5 text-center text-xs cursor-pointer', {
+                'text-gray-400': !isSameMonth(date, day),
+                'bg-blue-500 text-white rounded-full': isToday(day),
+                'bg-blue-100 rounded-full text-blue-600 font-bold': isSameDay(day, selectedDate)
+              })}
+            >
+              {formatDayMini(day)}
+            </button>
+          </Fragment>
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -1,41 +1,92 @@
-import { useContext } from 'react';
-import { CalendarContext } from '../context';
-import { Logo } from './Logo';
-import dayjs from 'dayjs';
-import { CalendarContextType } from '../models';
+import { StyledComponent } from '@emotion/styled';
+import { styled, Theme } from '@mui/material';
+import { Logo, DateType } from '../components';
+import { CalendarHeaderProps, UseHeaderHook } from '../models';
+import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { useHeader } from '../hooks';
 
-export function CalendarHeader() {
-  const { monthIndex, setMonthIndex }: CalendarContextType = useContext(CalendarContext) as CalendarContextType;
-  const gotoPrevMonth = (): void => setMonthIndex(monthIndex - 1);
-  const gotoNextMonth = (): void => setMonthIndex(monthIndex + 1);
-  const gotoCurrentMonth = (): void => setMonthIndex(
-    monthIndex === dayjs().month()
-      ? monthIndex + Math.random()
-      : dayjs().month()
-  );
-  const title: string = document.title;
+const UserTooltip: StyledComponent<TooltipProps> = styled(
+  ({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  )
+)(({ theme }: { theme: Theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    border: '1px solid #dadde9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontSize: theme.typography.pxToRem(14),
+    maxWidth: 300
+  }
+}));
+
+export function CalendarHeader({
+  title,
+  date,
+  gotoPrevDate,
+  gotoNextDate,
+  gotoCurrentDate,
+  logOut,
+  dateType,
+  setDateType,
+  user
+}: CalendarHeaderProps): JSX.Element {
+  const { headerDate, userDetails: { name, roles } }: UseHeaderHook = useHeader(date, dateType.id, user);
+
   return (
-      <header className="px-4 py-2 flex items-center" data-testid="calendar-header">
-        <Logo/>
-        <h1 className="ml-5 mr-10 text-xl text-gray-500 font-bold">
-          { title }
-        </h1>
-        <button onClick={gotoCurrentMonth} className="border rounded py-2 px-4 mr-5" data-testid="calendar-today-button">
-          Today
+    <header className="px-4 py-2 flex items-center" data-testid="calendar-header">
+      <Logo />
+      <h1 className="ml-4 mr-8" data-testid="calendar-header-title">{title}</h1>
+      <button
+        onClick={gotoCurrentDate}
+        className="border rounded py-2 px-4 mr-4 hover:bg-slate-100"
+        data-testid="calendar-header-today-button"
+      >
+        Today
+      </button>
+      <button
+        onClick={gotoPrevDate}
+        data-testid="calendar-header-prev-button"
+        className="hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center"
+      >
+        <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+          chevron_left
+        </span>
+      </button>
+      <button
+        onClick={gotoNextDate}
+        data-testid="calendar-header-next-button"
+        className="hover:bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center"
+      >
+        <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
+          chevron_right
+        </span>
+      </button>
+      <h2 className="ml-4" data-testid="calendar-header-date">
+        {headerDate}
+      </h2>
+      <div className="flex items-center ml-auto">
+        {!!user && (
+          <UserTooltip
+            title={
+              <>
+                <p><b>Logged in:</b> {name}</p>
+                <p><b>Roles:</b> {roles}</p>
+              </>
+            }>
+            <span className="material-icons-outlined cursor-pointer text-gray-600 hover:text-gray-800">
+              person
+            </span>
+          </UserTooltip>
+        )}
+        <DateType dateType={dateType} setDateType={setDateType} />
+        <button
+          onClick={logOut}
+          className="border rounded py-2 px-4 mr-4 hover:bg-slate-100"
+          data-testid="calendar-header-logout-button"
+        >
+          Log out
         </button>
-        <button onClick={gotoPrevMonth} data-testid="calendar-prev-button">
-          <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-            chevron_left
-          </span>
-        </button>
-        <button onClick={gotoNextMonth} data-testid="calendar-next-button">
-          <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-            chevron_right
-          </span>
-        </button>
-        <h2 className="ml-4 text-xl text-gray-500 font-bold" data-testid="calendar-date">
-          {dayjs().month(monthIndex).format('MMMM YYYY')}
-        </h2>
-      </header>
+      </div>
+    </header>
   );
 }

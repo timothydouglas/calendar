@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'crusher-swarm-client' }
+  agent { label 'jdk17' }
   options {
     disableConcurrentBuilds()
   }
